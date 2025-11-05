@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pkl
+*.joblib
+*.csv
+
+# Environment
+.env
+venv/
+*.sqlite3
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit and build artifacts
+.streamlit/
+data/
