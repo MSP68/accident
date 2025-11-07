@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import os
 import random
-import plotly.graph_objects as go
+import plotly.tools as tls
+import seaborn as sns
 from sklearn.inspection import PartialDependenceDisplay, partial_dependence 
 
 # --- Model Loading (Cached for performance) ---
@@ -31,7 +32,7 @@ def load_model():
         st.stop()
 
 # Load the model object
-model = load_model()
+xgbregressor = load_model()
 
 @st.cache_data
 def load_data():
@@ -39,9 +40,8 @@ def load_data():
     return data
     
 accident_data = load_data()
-
-accident_risk = accident_data.pop('accident_risk')
-# --- Streamlit UI and Prediction Logic ---
+X = accident_data.copy()
+accident_risk = X.pop('accident_risk')
 
 st.set_page_config(
     page_title="Road Accident Predictor", 
@@ -50,108 +50,39 @@ st.set_page_config(
 
 st.title("Road Accident Predictor")
 
-second_feature_options = accident_data.columns.to_list()
-second_feature_options.remove('curvature')
-second_feature_options = [None] + second_feature_options
 
-st.header("Factors affecting road accident risk")
+st.markdown("#### Factors affecting road accident risk. This plot shows the effects of 5 " 
+ "factors, in order of magnitude, on predicted risk")
+fig, axes = plt.subplots(
+    nrows=1, 
+    ncols=5, 
+    figsize=(24, 4) # Sets the overall size
+)
 
-selected_second_feature = st.selectbox(
-        "2nd Feature:",
-        options=second_feature_options,
-    )
-
-    
 @st.cache_data
-def calculate_pdp_data(second_feature):
-    """
-    Calculates the Partial Dependence data and caches the result.
-    The cache key depends on the model, the filtered data used, and the feature list.
-    """
-    # Streamlit displays the spinner while this function is running (or calculating the cache)
-    with st.spinner(f"Running computationally intensive PDP calculation..."):
-        features = ['curvature']
-        if second_feature:
-            features += [second_feature]
-        # partial_dependence performs the slow calculation
-        pdp_results = partial_dependence(
-            estimator=model,
-            X=accident_data,
-            features=features, # e.g., ['curvature']
-            kind='average',
-            grid_resolution=50 # Determines the smoothness and calculation cost
-        )
-    
-    return pdp_results
- 
-pdp_results = calculate_pdp_data(selected_second_feature)
-if selected_second_feature:
-    
-    pdp_values = pdp_results.average[0]
-    curvature_grid = pdp_results.grid_values[0]
-
-    # 2. Create a DataFrame for Plotly
-    pdp_df = pd.DataFrame({
-            'Curvature': curvature_grid,
-            'Partial Dependence (Risk)': pdp_values
-        })
-
-    # 3. Create the interactive Plotly line chart
-    fig = px.line(
-            pdp_df,
-            x='Curvature',
-            y='Partial Dependence (Risk)',
-            title='PARTIAL DEPENDENCE PLOT',
+def generate_pdp(_model, data, feature):
+    return PartialDependenceDisplay.from_estimator(
+        estimator=_model, 
+        X=data, 
+        features=[feature], 
         )
 
-    # Style and update layout
-    fig.update_traces(mode='lines+markers', line=dict(color='#8B0000', width=3))
-    fig.update_layout(
-            xaxis_title='Curvature',
-            yaxis_title='Partial Dependence (Predicted Risk)',
-            margin=dict(l=40, r=40, t=60, b=40),
-            hovermode="x unified",
-            template="plotly_white"
-        )
+pdp_display = generate_pdp(xgbregressor, X, 'curvature')  
+pdp_display.plot(ax=axes[0]) 
 
+barplot_features = accident_data.columns.to_list()
+barplot_features.remove('curvature')
+barplot_features.remove('accident_risk')
 
-else:
-    pdp_results = calculate_pdp_data(selected_second_feature)
-    pdp_values = pdp_results.average[0]
-    curvature_grid = pdp_results.grid_values[0]
+for i, feature in enumerate(barplot_features):
+    sns.countplot(
+        data=X, 
+        x=feature, 
+        ax=axes[i + 1],
+    )
+fig.tight_layout()
+st.pyplot(fig)
 
-    # 2. Create a DataFrame for Plotly
-    pdp_df = pd.DataFrame({
-            'Curvature': curvature_grid,
-            'Partial Dependence (Risk)': pdp_values
-        })
-
-    # 3. Create the interactive Plotly line chart
-    fig = px.line(
-            pdp_df,
-            x='Curvature',
-            y='Partial Dependence (Risk)',
-            title='PARTIAL DEPENDENCE PLOT',
-        )
-
-    # Style and update layout
-    fig.update_traces(mode='lines+markers', line=dict(color='#8B0000', width=3))
-    fig.update_layout(
-            xaxis_title='Curvature',
-            yaxis_title='Partial Dependence (Predicted Risk)',
-            margin=dict(l=40, r=40, t=60, b=40),
-            hovermode="x unified",
-            template="plotly_white"
-        )
-        
-        # 4. Display the plot
-st.plotly_chart(fig, width='stretch')
-
-
-
-
-# Input features (Adjust these sliders to match your model's 
-# number of features and typical input range)
 
 col1, col2 = st.columns(2)
 
@@ -167,10 +98,6 @@ with col1:
     weather = st.radio("Weather", weather_choices)
     num_reported_accidents = st.radio("Number of Reported Accidents", range(7))
 
-with col2:
-    st.markdown("### Model Status")
-    # Display a visual check that the model is loaded
-    st.info(f"Model loaded: {type(model).__name__}")
     
 
 # Prediction Button
@@ -191,7 +118,7 @@ if st.button("Calculate Probability", key="predict_button", type="primary"):
 
     # 2. Make the prediction
     try:
-        prediction = model.predict(X_predict)
+        prediction = xgbregressor.predict(X_predict)
         # Ensure the final output is strictly [0, 1] as requested
         # This is a safe guard, but proper training (binary:logistic) is the main method
         #probability = np.clip(prediction, 0.0, 1.0) 
