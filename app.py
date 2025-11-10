@@ -54,10 +54,11 @@ st.title("Road Accident Predictor")
 st.markdown("#### Factors affecting road accident risk. This plot shows the effects of 5 " 
  "factors, in order of magnitude, on predicted risk")
 fig, axes = plt.subplots(
-    nrows=1, 
+    nrows=2, 
     ncols=5, 
-    figsize=(24, 4) # Sets the overall size
+    figsize=(24, 8) # Sets the overall size
 )
+axes = axes.flatten()
 
 @st.cache_data
 def generate_pdp(_model, data, feature):
@@ -80,6 +81,10 @@ for i, feature in enumerate(barplot_features):
         x=feature, 
         ax=axes[i + 1],
     )
+pdp_display.plot(ax=axes[5]) 
+for i, feature in [(0, 'speed_limit'), (1, 'num_reported_accidents')]:
+    _pdp_display = generate_pdp(xgbregressor, X, feature)
+    _pdp_display.plot(ax=axes[i + 6])
 fig.tight_layout()
 st.pyplot(fig)
 
