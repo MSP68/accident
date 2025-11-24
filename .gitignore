@@ -1,8 +1,6 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pkl
-*.joblib
 *.csv
 
 # Environment
