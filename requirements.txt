@@ -5,9 +5,6 @@ cachetools==6.2.1
 certifi==2025.10.5
 charset-normalizer==3.4.4
 click==8.3.0
-contourpy @ file:///Users/runner/miniforge3/conda-bld/contourpy_1762525493111/work
-cycler @ file:///home/conda/feedstock_root/build_artifacts/cycler_1733332471406/work
-fonttools @ file:///Users/runner/miniforge3/conda-bld/fonttools_1759187188865/work
 gitdb==4.0.12
 GitPython==3.1.45
 idna==3.11
@@ -15,39 +12,28 @@ Jinja2==3.1.6
 joblib==1.5.2
 jsonschema==4.25.1
 jsonschema-specifications==2025.9.1
-kiwisolver @ file:///Users/runner/miniforge3/conda-bld/bld/rattler-build_kiwisolver_1762488860/work
 MarkupSafe==3.0.3
 matplotlib==3.10.7
 munkres==1.1.4
 narwhals==2.10.1
-numpy @ file:///Users/runner/miniforge3/conda-bld/bld/rattler-build_numpy_1761161589/work/dist/numpy-2.3.4-cp311-cp311-macosx_11_0_arm64.whl#sha256=69a7647252d55dd39da1c2572c03b8715bd976f4e070be6ad8b11fbf210ba4ac
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1745345660/work
-pandas @ file:///Users/runner/miniforge3/conda-bld/pandas_1759265615787/work
-patsy @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_patsy_1760998269/work
+numpy==2.3.4
+Pandas==2.3.3
 pillow==12.0.0
 plotly==6.3.1
 protobuf==6.33.0
 pyarrow==21.0.0
 pydeck==0.9.1
-pyparsing @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pyparsing_1758436411/work
-python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_python-dateutil_1751104122/work
-pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1742920838005/work
 referencing==0.37.0
 requests==2.32.5
 rpds-py==0.28.0
+seaborn==0.13.2
 scikit-learn==1.7.2
-scipy @ file:///Users/runner/miniforge3/conda-bld/scipy-split_1761689935521/work/dist/scipy-1.16.3-cp311-cp311-macosx_11_0_arm64.whl#sha256=365915230343b8dfa6c82237e57b1aeffd4cdef8c61406d14bc2f1db379070b1
-seaborn @ file:///home/conda/feedstock_root/build_artifacts/seaborn-split_1733730015268/work
-six @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_six_1753199211/work
 smmap==5.0.2
-statsmodels @ file:///Users/runner/miniforge3/conda-bld/statsmodels_1759297131489/work
 streamlit==1.51.0
 tenacity==9.1.2
 threadpoolctl==3.6.0
 toml==0.10.2
 tornado==6.5.2
 typing_extensions==4.15.0
-tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1742745135198/work
-unicodedata2 @ file:///Users/runner/miniforge3/conda-bld/unicodedata2_1762269037288/work
 urllib3==2.5.0
 xgboost==3.1.1
