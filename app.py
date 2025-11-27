@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import plotly.graph_objects as go
+import xgboost
 from sklearn.inspection import PartialDependenceDisplay
 
 MODEL_FILE = 'reduced_accident_model.joblib'
