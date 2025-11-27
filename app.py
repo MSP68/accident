@@ -3,6 +3,7 @@ import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import plotly.graph_objects as go
 from sklearn.inspection import PartialDependenceDisplay
 
 MODEL_FILE = 'reduced_accident_model.joblib'
@@ -107,6 +108,31 @@ with st.form('prediction_form'):
     
     submitted = st.form_submit_button("Calculate Probability", type="primary")
 
+import plotly.graph_objects as go
+import streamlit as st
+
+def plotly_gauge(value, title="Risk of accident"):
+    fig = go.Figure(go.Indicator(
+        mode = "gauge+number",
+        value = value,
+        domain = {'x': [0, 1], 'y': [0, 1]},
+        title = {'text': title},
+        number = {'suffix': '%', 'font': {'color': 'black'}},
+        gauge = {
+            'axis': {'range': [None, 100]},
+            'bar': {'color': "black", 'thickness': 0.4},
+            'steps': [
+                {'range': [0, 33], 'color': "green"},
+                {'range': [33, 66], 'color': "orange"},
+                {'range': [66, 100], 'color': "red"}
+            ],
+
+        }
+    ))
+    fig.update_layout(height=400)
+    return fig
+
+
 if submitted:
     input_values = {
         'curvature': [curvature],
@@ -123,21 +149,8 @@ if submitted:
     # 2. Make the prediction
     try:
         prediction = xgbregressor.predict(X_predict)[0]*100
+        st.plotly_chart(plotly_gauge(prediction))
         
-        st.markdown("---")
-        st.markdown("### Result")
-        
-        # Use HTML/CSS for a clean, visual display of the probability
-        st.markdown(
-            f"""
-            <div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 5px solid #4CAF50;">
-                <p style="font-size: 18px; margin: 0;">Predicted Probability of Accident:</p>
-                <h1 style="color: #4CAF50; margin: 0; font-size: 48px;">{prediction:.1f} %</h1>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-
     except Exception as e:
         st.error(f"Prediction failed. Check your input data shape/model compatibility: {e}")
 
